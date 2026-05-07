@@ -15,6 +15,11 @@ persona_spec:
     signal_keywords: ["GRE", "CMU", "UCLA", "ACL", "ICLR", "CS", "AI", "NLP", "科研", "实习", "app", "独立开发"]
     specificity_markers: ["学校名", "城市名", "会议名", "分数", "项目名", "产品名", "公司名"]
   anti_signals: ["中介", "课程", "机构", "广告", "低价申请", "互粉", "抽奖", "加微信"]
+  # Optional: list known-good creator nicknames (exact XHS profile name).
+  # These are searched by nickname after normal pack collection and injected with
+  # query_pack="seed_rescue" so they always appear in scored output regardless of
+  # whether the search algorithm surfaced them.
+  seed_creators: ["Creator昵称A", "Creator昵称B"]
 
 query_packs:
   primary_evidence:
