@@ -102,8 +102,12 @@ V1_CSV_FIELDS = BASE_CSV_FIELDS + [
 # Follower tier boundaries (exact when follower_count known; estimated from avg_likes otherwise)
 _TIER_LABELS_EXACT = [(1000, "<1K"), (5000, "1K-5K"), (10000, "5K-10K"), (50000, "10K-50K"), (float("inf"), ">50K")]
 _TIER_LABELS_EST   = [(1000, "~<1K"), (5000, "~1K-5K"), (10000, "~5K-10K"), (50000, "~10K-50K"), (float("inf"), "~>50K")]
-# avg_likes → estimated follower bucket upper bound (rough XHS engagement heuristic ~5-10% rate)
-_LIKES_TO_FOLLOWERS = [(30, 1000), (200, 5000), (800, 10000), (3000, 50000), (float("inf"), 200000)]
+# avg_likes → estimated follower bucket (used only when follower_count is unavailable).
+# XHS API does NOT expose follower counts in search results or note data; xhs user <id>
+# also fails frequently with profile_unavailable. These estimates assume ~10% engagement
+# rate for niche micro-influencers and can be off by one tier in either direction.
+# Always mark estimated tiers with ~ prefix and advise manual verification.
+_LIKES_TO_FOLLOWERS = [(100, 1000), (500, 5000), (1000, 10000), (5000, 40000), (float("inf"), 200000)]
 
 
 def compute_follower_tier(follower_count: int | str, avg_likes: int) -> str:
