@@ -40,6 +40,69 @@ Let me know when it's ready.
 
 After installation, restart your AI tool and describe the creator you're looking for in natural language — Claude handles the rest.
 
+## 首次使用清单 · Onboarding Checklist
+
+**1. 安装 koc-finder 和 xhs CLI**
+
+```bash
+pip install git+https://github.com/Koi-west/koc-finder
+pip install xhs
+```
+
+**2. 登录小红书（必须）**
+
+```bash
+xhs login --qrcode   # 用手机扫码，session 存本地
+```
+
+每次 session 过期后重新跑一遍。如果运行途中日志出现 `Session expired`，说明 session 中途失效，评论数据会缺失，建议重新登录后再跑一次。
+
+Run this before each session. If the log shows `Session expired` mid-run, comment data will be missing — re-login and re-run.
+
+**3. 安装飞书 CLI（可选，导出多维表格用）**
+
+两种方式选一种：
+
+Option A — 跟着官方文档装（推荐，AI 可以帮你操作）：
+> https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md
+
+Option B — 手动：
+```bash
+npx @larksuite/cli@latest install
+```
+
+装完后登录：
+```bash
+lark-cli auth login
+```
+
+## 每次运行的输出文件 · Output Files
+
+每次运行在 `output/runs/<timestamp>/` 下生成一个独立目录，`output/latest` 符号链接始终指向最新一次：
+
+Each run creates an isolated directory under `output/runs/<timestamp>/`. `output/latest` always points to the most recent run.
+
+```
+output/
+├── latest -> runs/2026-05-07_163924_.../   # 符号链接，指向最新
+├── persona_spec.yaml                        # 本次使用的画像配置
+└── runs/
+    └── 2026-05-07_163924_.../
+        ├── koc_candidates.csv           # 全量：所有打分创作者（100 人），用于备查和手动筛选
+        ├── koc_candidates_precision.csv # 精选：自动过滤后的主交付版本（见下方规则）
+        ├── koc_candidates_summary.md    # Markdown 摘要，可直接发给合作方
+        ├── run_meta.json                # 运行元数据（词包、耗时、错误日志）
+        └── retrospective.md             # 自动回顾：哪些词包命中率高，哪些浪费了
+```
+
+**精选版过滤规则 · Precision pick rules：**
+- Priority A / B：始终入选
+- Priority C：仅在被 ≥ 2 个不同词包命中时入选
+- Priority Reject：排除
+- 排序：优先粉丝层级 1K–5K → 5K–10K → 其他，同层级内按分数降序
+
+**Priority A/B**: always included. **Priority C**: only if hit by ≥ 2 distinct query packs. **Reject**: excluded. Sorted by preferred follower tier (1K–5K first), then score descending.
+
 ## 已知局限 · Known Limitations
 
 这个工具还在持续迭代中，以下是目前明确的局限点，后续会逐步改进：
