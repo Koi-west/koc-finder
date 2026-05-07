@@ -116,28 +116,42 @@ def cmd_merge(runs_dir: Path, output: Path) -> None:
 @click.option(
     "--skills-dir",
     type=click.Path(path_type=Path),
-    default=Path.home() / ".claude" / "skills",
-    show_default=True,
-    help="Target Claude skills directory",
+    default=None,
+    help="Target skills directory (auto-detected if omitted)",
 )
-def cmd_install_skill(skills_dir: Path) -> None:
-    """Copy the bundled Claude skill into ~/.claude/skills/xhs-koc-finder/."""
+def cmd_install_skill(skills_dir: Path | None) -> None:
+    """Copy the bundled skill into your agent skills directory.
+
+    Auto-detection order:
+      1. ~/.agents/          (shared between Claude Code + Codex)
+      2. ~/.claude/skills/   (Claude Code only)
+    """
     here = Path(__file__).parent.parent
     src = here / "skill"
     if not src.exists():
         click.echo(f"[error] skill directory not found at {src}", err=True)
         sys.exit(1)
 
+    if skills_dir is None:
+        agents_dir = Path.home() / ".agents"
+        claude_dir = Path.home() / ".claude" / "skills"
+        if agents_dir.exists() and agents_dir.is_dir():
+            skills_dir = agents_dir
+            click.echo(f"[info] detected ~/.agents — installing for both Claude Code and Codex")
+        else:
+            skills_dir = claude_dir
+            click.echo(f"[info] ~/.agents not found — installing for Claude Code only")
+            click.echo(f"       Tip: create ~/.agents and symlink your skills dirs to share across tools")
+
     dest = skills_dir / "xhs-koc-finder"
     if dest.exists():
-        click.confirm(
-            f"Skill already installed at {dest}. Overwrite?", abort=True
-        )
+        click.confirm(f"Skill already installed at {dest}. Overwrite?", abort=True)
         shutil.rmtree(dest)
 
+    skills_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(src, dest)
     click.echo(f"[ok] skill installed to {dest}")
-    click.echo("     Restart Claude Code (or reload skills) to pick up the change.")
+    click.echo("     Restart Claude Code / Codex to pick up the change.")
 
 
 if __name__ == "__main__":

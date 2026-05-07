@@ -17,30 +17,38 @@ Define a creator persona in YAML, run one command, get a scored CSV + Markdown s
 ### 1. Install
 
 ```bash
-pip install xhs-koc-finder
-# or with uv (recommended):
-uv tool install xhs-koc-finder
+pip install git+https://github.com/Koi-west/koc-finder
 ```
 
-This installs `koc-finder` and its dependency `xiaohongshu-cli` (the `xhs` command).
+This installs two commands:
+- `koc-finder` — the KOC finder CLI
+- `xhs` — Xiaohongshu API client (via [xiaohongshu-cli](https://github.com/jackwener/xiaohongshu-cli))
 
 ### 2. Authenticate with Xiaohongshu
 
 ```bash
-xhs --version       # verify installation
-xhs login --qrcode  # scan QR code in terminal
-xhs status --json   # should show authenticated: true
+xhs login --qrcode  # scan QR code shown in terminal with your XHS mobile app
+xhs status --json   # verify: should show authenticated: true
 ```
 
-### 3. Install the Claude skill (optional)
-
-If you use Claude Code and want the AI-assisted workflow:
+### 3. Install the Claude skill
 
 ```bash
 koc-finder install-skill
 ```
 
-Then restart Claude Code. The skill will guide persona creation and pipeline runs.
+- If `~/.agents/` exists (shared skills directory), installs there → automatically available in **both Claude Code and Codex**
+- Otherwise installs to `~/.claude/skills/` → Claude Code only
+
+Then restart Claude Code or Codex. You can now invoke the skill with `/xhs-koc-finder`.
+
+**Tip — share skills across Claude Code and Codex:**
+```bash
+mkdir ~/.agents
+mv ~/.claude/skills/* ~/.agents/
+rm -rf ~/.claude/skills && ln -s ~/.agents ~/.claude/skills
+rm -rf ~/.codex/skills  && ln -s ~/.agents ~/.codex/skills
+```
 
 ### 4. Offline smoke test
 
