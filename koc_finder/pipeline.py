@@ -173,6 +173,7 @@ class RunConfig:
     target_circles: list[str]
     pool: dict[str, list[str]] = field(default_factory=dict)
     scale: str = "normal"
+    seed_creators: list[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -397,13 +398,14 @@ def load_v1_config(data: dict[str, Any], limits: dict[str, Any], scale: str) -> 
         + text_values(creator_profile.get("must_have")) + text_values(creator_profile.get("nice_to_have"))
         + target_circles
     )
+    seed_creators = unique_keep_order(text_values(spec.get("seed_creators")))
     return RunConfig(
         mode="v1", persona_text=persona_text, raw_spec=data, query_packs=query_packs,
         signal_keywords=signal_keywords, ordinary_terms=ordinary_terms,
         anti_signals=anti_signals, target_circles=target_circles,
         pool={"identity_terms": ordinary_terms, "content_terms": [], "circle_terms": target_circles,
               "scene_terms": signal_keywords, "exclude_terms": anti_signals},
-        scale=scale,
+        scale=scale, seed_creators=seed_creators,
     )
 
 
@@ -727,6 +729,43 @@ def high_signal_score_for_note(note: Note) -> float:
 # Pipeline stages
 # ---------------------------------------------------------------------------
 
+def rescue_seeds(runner: XhsRunner, config: RunConfig, notes_by_id: dict[str, Note]) -> int:
+    """Search for each seed creator by nickname and inject their notes into notes_by_id.
+
+    Seed creators listed in persona_spec.seed_creators are guaranteed to appear in the
+    scored output regardless of whether the main query packs happened to surface them.
+    Each seed creator's notes are labelled query_pack='seed_rescue' and query='seed:<nickname>'.
+    """
+    if not config.seed_creators:
+        return 0
+    injected = 0
+    for nickname in config.seed_creators:
+        try:
+            data = runner.search(nickname)
+            items = data.get("items") if isinstance(data, dict) else []
+            for item in (items or [])[:20]:
+                note = normalize_note_item(item)
+                if not note.note_id:
+                    continue
+                if note.creator_name.lower().replace(" ", "") != nickname.lower().replace(" ", ""):
+                    continue
+                if note.note_id in notes_by_id:
+                    existing = notes_by_id[note.note_id]
+                    if "seed_rescue" not in existing.query_pack:
+                        existing.query_pack = ",".join([p for p in existing.query_pack.split(",") if p] + ["seed_rescue"])
+                    continue
+                note.query = f"seed:{nickname}"
+                note.query_pack = "seed_rescue"
+                annotate_note(note, config)
+                notes_by_id[note.note_id] = note
+                injected += 1
+        except Exception as exc:
+            print(f"[warn] seed rescue failed for '{nickname}': {exc}", file=sys.stderr)
+    if injected:
+        print(f"[info] seed_rescue: injected {injected} notes for {len(config.seed_creators)} seed creator(s)", file=sys.stderr)
+    return injected
+
+
 def collect_notes(runner: XhsRunner, config: RunConfig, offline: bool) -> tuple[list[Note], dict[str, Any]]:
     limits = SCALE_LIMITS.get(config.scale, V1_LIMITS) if config.mode == "v1" else V0_LIMITS
     notes_by_id: dict[str, Note] = {}
@@ -790,6 +829,8 @@ def collect_notes(runner: XhsRunner, config: RunConfig, offline: bool) -> tuple[
             time.sleep(V0_LIMITS["sleep_between_queries"])
 
     stats["errors"] = errors
+    if not offline and config.mode == "v1" and config.seed_creators:
+        rescue_seeds(runner, config, notes_by_id)
     return list(notes_by_id.values()), stats
 
 
