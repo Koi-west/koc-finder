@@ -8,3 +8,4 @@ output/
 *.csv
 *.json
 !examples/*.json
+!skill/examples/*.json
