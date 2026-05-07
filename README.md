@@ -16,25 +16,29 @@ The problem is that "right creator" is a persona, not a keyword. koc-finder lets
 
 ## 安装 · Install
 
-```bash
-pip install git+https://github.com/Koi-west/koc-finder
+把下面这段话发给 Claude Code 或 Codex，AI 会自动完成安装：
+
+Paste the following into Claude Code or Codex — the AI will handle the installation:
+
+```
+帮我安装 koc-finder：
+1. 运行 pip install git+https://github.com/Koi-west/koc-finder
+2. 运行 xhs login --qrcode，等我扫码登录小红书
+3. 运行 koc-finder install-skill，帮我选合适的安装目录
+安装完成后告诉我可以开始用了。
 ```
 
-登录小红书 · Authenticate:
-
-```bash
-xhs login --qrcode
+```
+Install koc-finder for me:
+1. Run pip install git+https://github.com/Koi-west/koc-finder
+2. Run xhs login --qrcode and wait for me to scan the QR code
+3. Run koc-finder install-skill and help me pick the right install target
+Let me know when it's ready.
 ```
 
-安装 Claude skill · Install the Claude skill:
+装完后重启 AI 工具，用自然语言描述你想找的博主就行了。
 
-```bash
-koc-finder install-skill
-```
-
-会问你用的是 Claude Code、Codex，还是两者共用。装完后重启 AI 工具，之后直接用自然语言告诉 Claude 你想找什么样的博主就行了。
-
-You'll be asked whether you use Claude Code, Codex, or both. After installation, restart your AI tool and describe the creator you're looking for in natural language — Claude handles the rest.
+After installation, restart your AI tool and describe the creator you're looking for in natural language — Claude handles the rest.
 
 ## 致谢 · Credits
 
