@@ -40,6 +40,30 @@ Let me know when it's ready.
 
 After installation, restart your AI tool and describe the creator you're looking for in natural language — Claude handles the rest.
 
+## 已知局限 · Known Limitations
+
+这个工具还在持续迭代中，以下是目前明确的局限点，后续会逐步改进：
+
+This tool is actively iterated. The following limitations are known and will be addressed over time:
+
+**粉丝数拿不到 · Follower count unavailable**
+
+小红书 API 不在搜索结果或笔记数据里暴露粉丝数；`xhs user <id>` 也频繁返回 `profile_unavailable`。目前只能从均赞数倒推估算（用 `~` 前缀标注），误差可能达一个档位。想确认某个账号真实粉丝数，需要手动打开主页查看。
+
+The XHS API does not expose follower counts in search results or note data. `xhs user <id>` also fails frequently with `profile_unavailable`. Follower tiers are estimated from avg_likes (marked with `~` prefix) and can be off by one tier. Verify manually by opening the profile.
+
+**搜索结果不完整 · Search results are algorithmically curated**
+
+`xhs search` 返回的是平台算法当前推的内容，不是全库查询。再好的词包也不能保证召回某个特定的创作者。`seed_creators` 字段可以强制注入已知账号，但整体覆盖率取决于算法暴露度。
+
+`xhs search` returns algorithmically ranked results, not a full database query. Even perfect queries don't guarantee a specific creator appears. Use `seed_creators` to force-include known accounts.
+
+**打分是弱信号，不是事实判断 · Scores are weak signals, not ground truth**
+
+评分基于公开笔记内容和评论区关键词，无法访问私密数据。Priority A/B 说明值得跟进，不等于一定合适；Reject 说明信号太弱，不等于账号不好。最终判断需要人工审核。
+
+Scores are based on public note content and comment keywords — no private data is accessed. Priority A/B means worth investigating, not "definitely right." Final decisions require human review.
+
 ## 致谢 · Credits
 
 见 [CREDITS.md](CREDITS.md)。所有对小红书的读取都通过 [xiaohongshu-cli](https://github.com/jackwener/xiaohongshu-cli)（@jackwener，Apache-2.0）完成。
