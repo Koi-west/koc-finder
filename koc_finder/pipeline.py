@@ -95,9 +95,34 @@ BASE_CSV_FIELDS = [
 ]
 
 V1_CSV_FIELDS = BASE_CSV_FIELDS + [
-    "discovery_queries", "discovery_packs", "high_signal_notes",
+    "follower_tier", "discovery_queries", "discovery_packs", "high_signal_notes",
     "retrieval_reason", "specificity_signals",
 ]
+
+# Follower tier boundaries (exact when follower_count known; estimated from avg_likes otherwise)
+_TIER_LABELS_EXACT = [(1000, "<1K"), (5000, "1K-5K"), (10000, "5K-10K"), (50000, "10K-50K"), (float("inf"), ">50K")]
+_TIER_LABELS_EST   = [(1000, "~<1K"), (5000, "~1K-5K"), (10000, "~5K-10K"), (50000, "~10K-50K"), (float("inf"), "~>50K")]
+# avg_likes → estimated follower bucket upper bound (rough XHS engagement heuristic ~5-10% rate)
+_LIKES_TO_FOLLOWERS = [(30, 1000), (200, 5000), (800, 10000), (3000, 50000), (float("inf"), 200000)]
+
+
+def compute_follower_tier(follower_count: int | str, avg_likes: int) -> str:
+    fc = coerce_int(follower_count, default=0)
+    if fc > 0:
+        for threshold, label in _TIER_LABELS_EXACT:
+            if fc < threshold:
+                return label
+        return ">50K"
+    # Estimate from avg_likes
+    est_followers = 0
+    for likes_threshold, est_fc in _LIKES_TO_FOLLOWERS:
+        if avg_likes <= likes_threshold:
+            est_followers = est_fc
+            break
+    for threshold, label in _TIER_LABELS_EST:
+        if est_followers < threshold:
+            return label
+    return "~>50K"
 
 # ---------------------------------------------------------------------------
 # Lexicons
@@ -1015,6 +1040,7 @@ def score_creator_v1(creator: Creator, config: RunConfig) -> dict[str, Any]:
         "matched_persona": ",".join(matched),
         "score": final_score,
         "priority": priority,
+        "follower_tier": compute_follower_tier(creator.follower_count, avg_likes),
         "content_tags": ",".join(content_tags[:10]),
         "audience_signals": circle_summary,
         "sample_notes": "; ".join(sample_notes),
@@ -1195,6 +1221,46 @@ def write_csv(rows: list[dict[str, Any]], path: Path, fields: list[str]) -> None
         writer.writeheader()
         for row in rows:
             writer.writerow({field: row.get(field, "") for field in fields})
+
+
+# Preferred follower tiers for precision picks (both exact and estimated)
+_PRECISION_TIERS = {"1K-5K", "~1K-5K", "5K-10K", "~5K-10K"}
+_SECONDARY_TIERS = {"10K-50K", "~10K-50K"}
+
+
+def write_precision_csv(rows: list[dict[str, Any]], path: Path, fields: list[str]) -> int:
+    """Write a precision-filtered subset of rows sorted by follower_tier then score.
+
+    Inclusion rules (all must pass):
+    - priority A or B: always included
+    - priority C: included only if hits ≥ 2 distinct discovery packs
+    - priority Reject: excluded
+
+    Sort order within output:
+    1. Preferred tier (1K-5K / ~1K-5K) first, then secondary (5K-10K / ~5K-10K), then others
+    2. Score descending within each tier group
+    """
+    def tier_rank(row: dict) -> int:
+        t = row.get("follower_tier", "")
+        if t in _PRECISION_TIERS:
+            return 0
+        if t in _SECONDARY_TIERS:
+            return 1
+        return 2
+
+    def qualifies(row: dict) -> bool:
+        p = row.get("priority", "")
+        if p in ("A", "B"):
+            return True
+        if p == "C":
+            packs = [x for x in row.get("discovery_packs", "").split(",") if x]
+            return len(set(packs)) >= 2
+        return False
+
+    precision = [r for r in rows if qualifies(r)]
+    precision.sort(key=lambda r: (tier_rank(r), -coerce_int(r.get("score", 0))))
+    write_csv(precision, path, fields)
+    return len(precision)
 
 
 def write_summary(rows: list[dict[str, Any]], path: Path, config: RunConfig, stats: dict[str, Any], notes_count: int) -> None:
@@ -1504,11 +1570,15 @@ def run(
 
     fields = V1_CSV_FIELDS if config.mode == "v1" else BASE_CSV_FIELDS
     csv_path = output_dir / "koc_candidates.csv"
+    precision_csv_path = output_dir / "koc_candidates_precision.csv"
     md_path = output_dir / "koc_candidates_summary.md"
     meta_path = output_dir / "run_meta.json"
     retro_path = output_dir / "retrospective.md"
 
     write_csv(rows, csv_path, fields)
+    if config.mode == "v1":
+        n_precision = write_precision_csv(rows, precision_csv_path, fields)
+        print(f"[ok] wrote {precision_csv_path} ({n_precision} precision picks)", file=sys.stderr)
     write_summary(rows, md_path, config, stats, len(notes))
 
     finished_at = datetime.now(timezone.utc).isoformat()
@@ -1526,6 +1596,7 @@ def run(
         print(f"[ok] wrote {retro_path}", file=sys.stderr)
         print(f"[ok] wrote {output_dir / 'persona_spec.yaml'}", file=sys.stderr)
     print(f"[done] {len(rows)} creators scored in {duration_sec:.0f}s | {output_dir}", file=sys.stderr)
+    print(f"[done] precision picks → {precision_csv_path.name if config.mode == 'v1' else 'n/a (v0 mode)'}", file=sys.stderr)
     session_expired = sum(1 for e in all_errors if "Session expired" in e)
     if session_expired > 0:
         print(
