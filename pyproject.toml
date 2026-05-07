@@ -1,0 +1,27 @@
+[project]
+name = "xhs-koc-finder"
+version = "0.2.0"
+description = "Find and score Xiaohongshu KOC candidates via persona-driven search"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["xiaohongshu", "koc", "influencer", "marketing", "rednote"]
+dependencies = [
+    "xiaohongshu-cli >= 0.6.4",
+    "pyyaml >= 6.0",
+    "click >= 8.0",
+]
+
+[project.scripts]
+koc-finder = "koc_finder.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/mikoapp/xhs-koc-finder"
+Repository = "https://github.com/mikoapp/xhs-koc-finder"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["koc_finder"]

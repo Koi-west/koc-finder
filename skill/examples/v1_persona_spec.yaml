@@ -1,0 +1,34 @@
+persona_spec:
+  creator_profile:
+    identity: "留学生，CS/AI/tech 方向"
+    content_style: "生活向，真实感，非机构"
+    follower_range: "500-50000"
+    must_have:
+      - "真实个人内容"
+      - "非机构号"
+    nice_to_have:
+      - "有学习/科研/产品/创业内容"
+  audience_proxy:
+    target_circles: ["founder", "投资人", "tech"]
+    evidence_threshold: "weak_proxy"
+  content_evidence:
+    signal_keywords: ["GRE", "CMU", "UCLA", "ACL", "ICLR", "CS", "AI", "NLP", "科研", "实习", "app", "独立开发"]
+    specificity_markers: ["学校名", "城市名", "会议名", "分数", "项目名", "产品名", "公司名"]
+  anti_signals: ["中介", "课程", "机构", "广告", "低价申请", "互粉", "抽奖", "加微信"]
+
+query_packs:
+  primary_evidence:
+    purpose: "creator 属于目标群体的直接证据"
+    queries: ["留学生 GRE", "美研 GRE", "留学生 CS", "美本 CS", "留学生 AI", "留子 CS"]
+  scene_evidence:
+    purpose: "creator 会自然发的内容场景"
+    queries: ["留学生 实习", "留学生 科研", "CS 实习 日常", "美研 日常", "留学生 找工作", "PhD 日常"]
+  specificity_evidence:
+    purpose: "高具体度证明词：学校/会议/考试/产品"
+    queries: ["CMU 留学生", "ACL 留学生", "GRE 330", "NLP 留学生", "ICLR 留学生", "科研 日常 留学生"]
+  circle_evidence:
+    purpose: "目标受众圈层的弱代理"
+    queries: ["留学生 founder", "留学生 app", "独立开发 留学生", "留学生 创业", "build in public 留学生", "留子 founder"]
+  lifestyle_evidence:
+    purpose: "生活向内容风格，用于召回，打分时谨慎"
+    queries: ["留子 一天", "留学生 日常", "海外生活 CS", "美研 生活"]

@@ -1,0 +1,162 @@
+{
+  "search": [
+    {
+      "keyword": "留学生 GRE",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "demi_gre",
+              "model_type": "note",
+              "xsec_token": "token_demi_gre",
+              "note_card": {
+                "display_title": "三周低强度速通GRE330保姆级教程",
+                "desc": "CMU准留学生记录GRE 330备考过程，不是课程，纯个人经验复盘。",
+                "user": {"user_id": "user_demi", "nickname": "Demitasse-like"},
+                "interact_info": {"liked_count": "14240", "collected_count": "22660", "comment_count": "227"},
+                "tag_list": [{"name": "GRE"}, {"name": "留学申请"}, {"name": "个人经验"}]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "keyword": "CMU 留学生",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "demi_cmu",
+              "model_type": "note",
+              "xsec_token": "token_demi_cmu",
+              "note_card": {
+                "display_title": "CMU LTI 的一天：NLP paper、咖啡和一点生活",
+                "desc": "记录在CMU做NLP科研和AI项目的一天，也聊了自己的app想法。",
+                "user": {"user_id": "user_demi", "nickname": "Demitasse-like"},
+                "interact_info": {"liked_count": "680", "collected_count": "210", "comment_count": "42"},
+                "tag_list": [{"name": "CMU"}, {"name": "NLP"}, {"name": "科研日常"}]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "keyword": "留子 一天",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "shallow_1",
+              "model_type": "note",
+              "xsec_token": "token_shallow_1",
+              "note_card": {
+                "display_title": "留子vlog｜普通的一天",
+                "desc": "吃饭上课回家，日常记录。",
+                "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"},
+                "interact_info": {"liked_count": "300", "collected_count": "20", "comment_count": "15"},
+                "tag_list": [{"name": "留子"}, {"name": "vlog"}, {"name": "日常"}]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "keyword": "留学生 日常",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "shallow_2",
+              "model_type": "note",
+              "xsec_token": "token_shallow_2",
+              "note_card": {
+                "display_title": "留学生日常｜今天也在摆烂",
+                "desc": "随便拍拍，普通vlog。",
+                "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"},
+                "interact_info": {"liked_count": "280", "collected_count": "18", "comment_count": "11"},
+                "tag_list": [{"name": "留学生"}, {"name": "vlog"}, {"name": "日常"}]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "keyword": "海外生活 CS",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "shallow_3",
+              "model_type": "note",
+              "xsec_token": "token_shallow_3",
+              "note_card": {
+                "display_title": "海外生活vlog｜CS课好多",
+                "desc": "今天上课，吃饭，回宿舍。",
+                "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"},
+                "interact_info": {"liked_count": "260", "collected_count": "16", "comment_count": "10"},
+                "tag_list": [{"name": "海外生活"}, {"name": "CS"}, {"name": "日常"}]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "keyword": "留学生 实习",
+      "payload": {
+        "ok": true,
+        "data": {
+          "items": [
+            {
+              "id": "profile_fail_note",
+              "model_type": "note",
+              "xsec_token": "token_profile_fail",
+              "note_card": {
+                "display_title": "硅谷实习的一天",
+                "desc": "记录实习和做AI side project的一天。",
+                "user": {"user_id": "user_profile_fail", "nickname": "ProfileFail"},
+                "interact_info": {"liked_count": "120", "collected_count": "30", "comment_count": "8"},
+                "tag_list": [{"name": "实习"}, {"name": "AI"}, {"name": "日常"}]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "read": {
+    "demi_gre": {"ok": true, "data": {"items": [{"note_card": {"note_id": "demi_gre", "display_title": "三周低强度速通GRE330保姆级教程", "desc": "CMU准留学生记录GRE 330备考过程，不是课程，纯个人经验复盘。", "user": {"user_id": "user_demi", "nickname": "Demitasse-like"}, "interact_info": {"liked_count": "14240", "collected_count": "22660", "comment_count": "227"}, "tag_list": [{"name": "GRE"}, {"name": "留学申请"}, {"name": "个人经验"}]}}]}},
+    "demi_cmu": {"ok": true, "data": {"items": [{"note_card": {"note_id": "demi_cmu", "display_title": "CMU LTI 的一天：NLP paper、咖啡和一点生活", "desc": "记录在CMU做NLP科研和AI项目的一天，也聊了自己的app想法。", "user": {"user_id": "user_demi", "nickname": "Demitasse-like"}, "interact_info": {"liked_count": "680", "collected_count": "210", "comment_count": "42"}, "tag_list": [{"name": "CMU"}, {"name": "NLP"}, {"name": "科研日常"}]}}]}},
+    "shallow_1": {"ok": true, "data": {"items": [{"note_card": {"note_id": "shallow_1", "display_title": "留子vlog｜普通的一天", "desc": "吃饭上课回家，日常记录。", "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"}, "interact_info": {"liked_count": "300", "collected_count": "20", "comment_count": "15"}, "tag_list": [{"name": "留子"}, {"name": "vlog"}, {"name": "日常"}]}}]}},
+    "shallow_2": {"ok": true, "data": {"items": [{"note_card": {"note_id": "shallow_2", "display_title": "留学生日常｜今天也在摆烂", "desc": "随便拍拍，普通vlog。", "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"}, "interact_info": {"liked_count": "280", "collected_count": "18", "comment_count": "11"}, "tag_list": [{"name": "留学生"}, {"name": "vlog"}, {"name": "日常"}]}}]}},
+    "shallow_3": {"ok": true, "data": {"items": [{"note_card": {"note_id": "shallow_3", "display_title": "海外生活vlog｜CS课好多", "desc": "今天上课，吃饭，回宿舍。", "user": {"user_id": "user_shallow", "nickname": "浅浅留子vlog"}, "interact_info": {"liked_count": "260", "collected_count": "16", "comment_count": "10"}, "tag_list": [{"name": "海外生活"}, {"name": "CS"}, {"name": "日常"}]}}]}},
+    "profile_fail_note": {"ok": true, "data": {"items": [{"note_card": {"note_id": "profile_fail_note", "display_title": "硅谷实习的一天", "desc": "记录实习和做AI side project的一天。", "user": {"user_id": "user_profile_fail", "nickname": "ProfileFail"}, "interact_info": {"liked_count": "120", "collected_count": "30", "comment_count": "8"}, "tag_list": [{"name": "实习"}, {"name": "AI"}, {"name": "日常"}]}}]}}
+  },
+  "comments": {
+    "demi_gre": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "founder同学"}, "content": "这个GRE330复盘很具体，想问AI方向申请也适用吗？", "like_count": "3"}]}},
+    "demi_cmu": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "tech投资人"}, "content": "CMU NLP和app实践这个结合很有意思。", "like_count": "2"}]}},
+    "shallow_1": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "路人"}, "content": "好看", "like_count": "0"}]}},
+    "shallow_2": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "路人"}, "content": "蹲", "like_count": "0"}]}},
+    "shallow_3": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "路人"}, "content": "日常", "like_count": "0"}]}},
+    "profile_fail_note": {"ok": true, "data": {"comments": [{"user_info": {"nickname": "同学"}, "content": "实习内容可以多讲讲吗？", "like_count": "1"}]}}
+  },
+  "user": {
+    "user_demi": {"ok": true, "data": {"basic_info": {"user_id": "user_demi", "nickname": "Demitasse-like", "desc": "CMU LTI 27' | AI/NLP | 开源我对世界的认知和思考"}, "interactions": [{"type": "fans", "count": "12000"}]}},
+    "user_shallow": {"ok": true, "data": {"basic_info": {"user_id": "user_shallow", "nickname": "浅浅留子vlog", "desc": "留子日常vlog"}, "interactions": [{"type": "fans", "count": "9000"}]}},
+    "user_profile_fail": {"ok": false, "error": {"code": "api_error", "message": "API error: {\"code\": -1, \"success\": false}"}}
+  },
+  "user_posts": {
+    "user_demi": {"ok": true, "data": {"notes": [{"note_id": "demi_recent", "display_title": "我的2025：从向外证明到向内构建", "desc": "年度复盘，AI、科研和生活。", "interact_info": {"liked_count": "347", "comment_count": "35"}}]}},
+    "user_shallow": {"ok": true, "data": {"notes": [{"note_id": "shallow_recent", "display_title": "留子vlog合集", "desc": "日常碎片", "interact_info": {"liked_count": "90", "comment_count": "5"}}]}},
+    "user_profile_fail": {"ok": false, "error": {"code": "api_error", "message": "API error: {\"code\": -1, \"success\": false}"}}
+  }
+}
