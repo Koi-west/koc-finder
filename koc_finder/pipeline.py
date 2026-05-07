@@ -1478,4 +1478,11 @@ def run(
         print(f"[ok] wrote {retro_path}", file=sys.stderr)
         print(f"[ok] wrote {output_dir / 'persona_spec.yaml'}", file=sys.stderr)
     print(f"[done] {len(rows)} creators scored in {duration_sec:.0f}s | {output_dir}", file=sys.stderr)
+    session_expired = sum(1 for e in all_errors if "Session expired" in e)
+    if session_expired > 0:
+        print(
+            f"[warn] {session_expired} comments call(s) failed due to session expiry — "
+            "audience_signals scores are degraded. Run `xhs login` before the next run.",
+            file=sys.stderr,
+        )
     return 0
