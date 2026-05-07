@@ -473,10 +473,11 @@ class XhsRunner:
     def read(self, note: Note) -> dict[str, Any]:
         if self.offline is not None:
             return unwrap((self.offline.get("read") or {}).get(note.note_id, {}))
-        args = ["read", note.note_id, "--json"]
+        # xhs read does not support --json; output is YAML
+        args = ["read", note.note_id]
         if note.xsec_token:
             args.extend(["--xsec-token", note.xsec_token])
-        return unwrap(self._run(args))
+        return unwrap(self._run_yaml(args))
 
     def comments(self, note: Note) -> dict[str, Any]:
         if self.offline is not None:
@@ -527,6 +528,26 @@ class XhsRunner:
             message = (error or {}).get("message") or output
             raise RuntimeError(f"xhs command failed: {' '.join(cmd)}: {message}")
         return payload
+
+    def _run_yaml(self, args: list[str], sleep_after: bool = True) -> Any:
+        """Run an xhs command whose output is YAML (e.g. xhs read)."""
+        cmd = ["xhs", *args]
+        proc = subprocess.run(cmd, check=False, capture_output=True, text=True)
+        if sleep_after and self.sleep_calls:
+            time.sleep(self.limits["sleep_between_calls"])
+        output = proc.stdout.strip() or proc.stderr.strip()
+        if not output:
+            return {}
+        if yaml is not None:
+            try:
+                return yaml.safe_load(output) or {}
+            except Exception:
+                pass
+        # fallback: try JSON (in case CLI upgrades to JSON output)
+        try:
+            return json.loads(output)
+        except json.JSONDecodeError:
+            return {}
 
 
 # ---------------------------------------------------------------------------
