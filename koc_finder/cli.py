@@ -112,45 +112,107 @@ def cmd_merge(runs_dir: Path, output: Path) -> None:
     click.echo(f"[info] merged {count} unique creators → {output}")
 
 
+_SETUP_OPTIONS = [
+    ("claude",  "Claude Code only",           "~/.claude/skills/"),
+    ("codex",   "Codex only",                 "~/.codex/skills/"),
+    ("agents",  "Both (via ~/.agents/)",      "~/.agents/  ← single source of truth for all tools"),
+    ("custom",  "Custom path",                "I'll type the path myself"),
+]
+
+
+def _pick_skills_dir() -> Path:
+    """Interactive prompt: ask the user which setup they have."""
+    click.echo()
+    click.echo("Where should the skill be installed?")
+    click.echo()
+    for i, (_, label, note) in enumerate(_SETUP_OPTIONS, 1):
+        click.echo(f"  {i}. {label}")
+        click.echo(f"     {note}")
+    click.echo()
+
+    while True:
+        raw = click.prompt("Enter number", default="1")
+        try:
+            idx = int(raw) - 1
+            if 0 <= idx < len(_SETUP_OPTIONS):
+                break
+        except ValueError:
+            pass
+        click.echo("  Please enter 1–4.")
+
+    key = _SETUP_OPTIONS[idx][0]
+
+    if key == "claude":
+        return Path.home() / ".claude" / "skills"
+
+    if key == "codex":
+        return Path.home() / ".codex" / "skills"
+
+    if key == "agents":
+        agents = Path.home() / ".agents"
+        if not agents.exists():
+            click.echo()
+            click.echo(f"  ~/.agents does not exist yet.")
+            click.echo(f"  This will create it and symlink both tools' skills dirs to it.")
+            click.confirm("  Continue?", abort=True)
+            agents.mkdir()
+            _setup_agents_symlinks(agents)
+            click.echo(f"  [ok] ~/.agents created and symlinked")
+        return agents
+
+    # custom
+    raw_path = click.prompt("Enter full path")
+    return Path(raw_path).expanduser()
+
+
+def _setup_agents_symlinks(agents: Path) -> None:
+    """Point ~/.claude/skills and ~/.codex/skills at ~/.agents, migrating existing content."""
+    for skills_dir in [
+        Path.home() / ".claude" / "skills",
+        Path.home() / ".codex" / "skills",
+    ]:
+        if skills_dir.exists() and not skills_dir.is_symlink():
+            for item in skills_dir.iterdir():
+                dest = agents / item.name
+                if not dest.exists():
+                    shutil.copytree(item, dest) if item.is_dir() else shutil.copy2(item, dest)
+            shutil.rmtree(skills_dir)
+        elif skills_dir.is_symlink():
+            skills_dir.unlink()
+        skills_dir.parent.mkdir(parents=True, exist_ok=True)
+        skills_dir.symlink_to(agents)
+
+
 @main.command("install-skill")
 @click.option(
     "--skills-dir",
     type=click.Path(path_type=Path),
     default=None,
-    help="Target skills directory (auto-detected if omitted)",
+    help="Skip the interactive prompt and install directly to this path",
 )
 def cmd_install_skill(skills_dir: Path | None) -> None:
-    """Copy the bundled skill into your agent skills directory.
+    """Install the bundled Claude / Codex skill.
 
-    Auto-detection order:
-      1. ~/.agents/          (shared between Claude Code + Codex)
-      2. ~/.claude/skills/   (Claude Code only)
+    Prompts you to choose your setup (Claude Code, Codex, both, or custom).
+    Pass --skills-dir to skip the prompt.
     """
     here = Path(__file__).parent.parent
     src = here / "skill"
     if not src.exists():
-        click.echo(f"[error] skill directory not found at {src}", err=True)
+        click.echo(f"[error] skill bundle not found at {src}", err=True)
         sys.exit(1)
 
     if skills_dir is None:
-        agents_dir = Path.home() / ".agents"
-        claude_dir = Path.home() / ".claude" / "skills"
-        if agents_dir.exists() and agents_dir.is_dir():
-            skills_dir = agents_dir
-            click.echo(f"[info] detected ~/.agents — installing for both Claude Code and Codex")
-        else:
-            skills_dir = claude_dir
-            click.echo(f"[info] ~/.agents not found — installing for Claude Code only")
-            click.echo(f"       Tip: create ~/.agents and symlink your skills dirs to share across tools")
+        skills_dir = _pick_skills_dir()
 
     dest = skills_dir / "xhs-koc-finder"
     if dest.exists():
-        click.confirm(f"Skill already installed at {dest}. Overwrite?", abort=True)
+        click.confirm(f"\nSkill already installed at {dest}. Overwrite?", abort=True)
         shutil.rmtree(dest)
 
     skills_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(src, dest)
-    click.echo(f"[ok] skill installed to {dest}")
+    click.echo(f"\n[ok] skill installed to {dest}")
     click.echo("     Restart Claude Code / Codex to pick up the change.")
 
 
