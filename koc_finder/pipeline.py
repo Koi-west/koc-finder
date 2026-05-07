@@ -781,7 +781,14 @@ def collect_notes(runner: XhsRunner, config: RunConfig, offline: bool) -> tuple[
         stats["packs"][pack_name] = {"queries": len(queries), "notes": 0, "purpose": pack.get("purpose", "")}
 
         for query in queries[: limits.get("max_queries_per_pack", len(queries))]:
-            data = runner.search(query)
+            try:
+                data = runner.search(query)
+            except Exception as exc:
+                msg = f"search failed for '{query}': {exc}"
+                errors.append(msg)
+                print(f"[warn] {msg} — skipping query", file=sys.stderr)
+                stats["queries"][query] = {"pack": pack_name, "notes": 0}
+                continue
             items = data.get("items") if isinstance(data, dict) else []
             query_count = 0
             for item in (items or [])[: limits["notes_per_query"]]:
